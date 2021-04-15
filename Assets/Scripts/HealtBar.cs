@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Slider))]
 public class HealtBar : MonoBehaviour
@@ -13,21 +14,21 @@ public class HealtBar : MonoBehaviour
     private float _targetValue = 0f;
     private float _curValue = 0f;
 
-    void Awake()
+    private void Awake()
     {
         _slider = GetComponent<Slider>();
-        _slider.onValueChanged.AddListener(delegate { ValueChange(); });
+        _slider.onValueChanged.AddListener(ValueChange);
         _fillRect = _slider.fillRect;
         _targetValue = _curValue = _slider.value;
     }
 
-    public void ValueChange()
+    private void ValueChange(float newValue)
     {
-        _targetValue = _slider.value;
+        _targetValue = newValue;
         _textSlider.text = _slider.value.ToString();
     }
 
-    void Update()
+    private void Update()
     {
         _curValue = Mathf.MoveTowards(_curValue, _targetValue, Time.deltaTime * fillSpeed);
 
@@ -38,7 +39,7 @@ public class HealtBar : MonoBehaviour
 
     private void OnDestroy()
     {
-        _slider.onValueChanged.RemoveAllListeners();
+        _slider.onValueChanged.RemoveListener(ValueChange);
     }
 
     public void Attack()
